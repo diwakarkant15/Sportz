@@ -36,8 +36,8 @@ export function securityMiddleware(){
                     return res.status(429).json({message: "Too many requests"});
                 }
                 return res.status(403).json({message: "forbidden"})
-                next();
             }
+            return next();
         }catch(e){
             console.error('Arcjet middleware error', e);
             return res.status(503).json({error: 'Service unavailable'})
