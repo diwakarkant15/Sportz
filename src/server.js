@@ -3,12 +3,17 @@ import 'dotenv/config'
 import {Pool} from 'pg'
 import { drizzle } from 'drizzle-orm/neon-http';
 import {matchRouter} from './routes/matches.js'
-
-const app = express()
+import http from 'http'
+import { attachWebSocketServer } from './ws/server.js';
 
 const PORT = 3000
+const HOST = '0.0.0.0'
+
+const app = express()
+const server = http.createServer(app)
 
 const db = drizzle(process.env.DATABASE_URL)
+
 
 // const { PGHOST, PGDATABASE, PGUSER, PGPASSWORD } = process.env;
 // const pool = new Pool({
@@ -43,6 +48,12 @@ app.get('/', (req , res) =>{
 
 app.use('/api/v1', matchRouter)
 
-app.listen(PORT, ()=>{
-    console.log(`Server is listening on port ${PORT}`);  
+const {broadCastMatchCreated} = attachWebSocketServer(server)
+app.locals.broadCastMatchCreated = broadCastMatchCreated
+
+server.listen(PORT, HOST, ()=>{
+    const baseUrl = HOST === '0.0.0.0' ? `http://localhost:${PORT}` : `http://localhost:${HOST}/${PORT}`;
+    console.log(`Server is listening on port ${baseUrl}`); 
+    console.log(`WebSocket server is running on ${baseUrl.replace('http', 'ws')}/ws`);
+     
 })
