@@ -6,6 +6,7 @@ import {matchRouter} from './routes/matches.js'
 import http from 'http'
 import { attachWebSocketServer } from './ws/server.js';
 import { securityMiddleware } from './arcjet.js';
+import { commentaryRouter } from './routes/commentary.js';
 
 const PORT = 3000
 const HOST = '0.0.0.0'
@@ -47,9 +48,10 @@ app.get('/', (req , res) =>{
     res.send("Hello from server")
 })
 
-app.use(securityMiddleware())
+//app.use(securityMiddleware())
 
 app.use('/api/v1', matchRouter)
+app.use('/api/v1/matches/:id/commentary', commentaryRouter)
 
 const {broadCastMatchCreated} = attachWebSocketServer(server)
 app.locals.broadCastMatchCreated = broadCastMatchCreated
