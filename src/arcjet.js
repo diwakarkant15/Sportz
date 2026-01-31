@@ -29,7 +29,7 @@ export function securityMiddleware(){
     return async(req, res, next)=>{
         if(!httpArcjet) return next();
         try{
-            const decision = await httpArcjet.protect(req);
+            const decision = await httpArcjet.protect({ req});
 
             if(decision.isDenied()){
                 if(decision.reason.isRateLimit()){
@@ -43,5 +43,5 @@ export function securityMiddleware(){
             return res.status(503).json({error: 'Service unavailable'})
             
         }
-    }
+    };
 }
