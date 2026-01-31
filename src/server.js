@@ -2,6 +2,7 @@ import express from 'express'
 import 'dotenv/config'
 import {Pool} from 'pg'
 import { drizzle } from 'drizzle-orm/neon-http';
+import {matchRouter} from './routes/matches.js'
 
 const app = express()
 
@@ -39,6 +40,8 @@ app.use(express.json())
 app.get('/', (req , res) =>{
     res.send("Hello from server")
 })
+
+app.use('/api/v1', matchRouter)
 
 app.listen(PORT, ()=>{
     console.log(`Server is listening on port ${PORT}`);  
