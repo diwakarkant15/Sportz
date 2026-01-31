@@ -12,13 +12,6 @@ const MAX_LIMIT = 100;
 
 export const commentaryRouter = Router({mergeParams : true});
 
-
-commentaryRouter.get('/', (req, res) => {
-    res.status(200).json({
-        message: "Commentary list"
-    })
-})
-
 commentaryRouter.get('/', async (req, res)=>{
     const paramsResult = matchIdParamSchema.safeParse(req.params);
     if(!paramsResult.success){
@@ -28,7 +21,7 @@ commentaryRouter.get('/', async (req, res)=>{
         })
     }
 
-    const queryResult = listCommentaryQuerySchema.safeParse(req.body);
+    const queryResult = listCommentaryQuerySchema.safeParse(req.query);
     if(!queryResult.success){
         return res.status(400).json({
             error: "invalid query params",
@@ -78,6 +71,10 @@ commentaryRouter.post('/', async(req, res)=>{
             ...rest
         }).returning();
 
+        if(res.app.locals.broadCastCommentdary){
+            res.app.locals.broadCastCommentdary(result.matchId, result);
+        }
+        
         res.status(201).json({ data: result});
     }catch(e){
         console.error('Failed to create commentary', e.message);
